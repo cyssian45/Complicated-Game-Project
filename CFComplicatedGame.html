@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+		canvas {
+			border:1px solid #d3d3d3;
+			background-color: #00ff00;
+		}
+	</style>
+	</head>
+	<body onload="startGame()">
+
+		<script>
+		
+		
+		
+		//*********************ROADMAP*************************
+		//NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
+		//THEN IMPLEMENT A TOP SPEED AND A FRICTION FORCE THAT SLOWLY BRINGS THE CAR TO A STOP WHEN NO BUTTONS ARE PRESSED
+		
+		
+		
+		
+		//car variable
+		var car;
+
+		function startGame() {
+			//creates new car object
+			car = new carConstructor(20, 40, "red", 300, 300);
+			//starts the game
+			myGameArea.start();
+		}
+
+		//sets up the game area
+		var myGameArea = {
+			canvas : document.createElement("canvas"),
+			
+			//Run when webpage opens. Initializes canvas. Sets up the event listeners that look for key presses.
+			start : function() {
+				this.canvas.width = 600;
+				this.canvas.height = 600;
+				this.context = this.canvas.getContext("2d");
+				document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+				this.frameNo = 0;
+				this.interval = setInterval(updateGameArea, 20);
+				
+				//Event Listeners
+				window.addEventListener('keydown', function (e) {
+					e.preventDefault();
+					myGameArea.keys = (myGameArea.keys || []);
+					myGameArea.keys[e.keyCode] = (e.type == "keydown");
+				})
+				window.addEventListener('keyup', function (e) {
+					myGameArea.keys[e.keyCode] = (e.type == "keydown");
+				})
+			},
+			stop : function() {
+				clearInterval(this.interval);
+			},    
+			clear : function() {
+				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			}
+		}
+
+		//Car constructor. Includes all aspects of the car (see parameters)
+		function carConstructor(width, height, color, x, y, type) {
+
+			this.type = type;
+			this.width = width;
+			this.height = height;
+			this.speed = 0;
+			this.acceleration = 0;
+			this.friction = 0;
+			this.angle = 0;
+			this.moveAngle = 0;
+			this.x = x;
+			this.y = y;    
+			
+			//Update redraws the rectangle with the correct orientation (This controls the rotation of the car)
+			this.update = function() {
+				ctx = myGameArea.context;
+				ctx.save();
+				ctx.translate(this.x, this.y);
+				ctx.rotate(this.angle);
+				ctx.fillStyle = color;
+				ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);
+				ctx.restore();    
+			}
+			
+			//newPos moves the car forwards and backwards based on the "angle" value
+			this.newPos = function() {
+				this.speed += this.acceleration;
+				if (this.speed > 0) {
+					this.speed += this.friction;
+				} else if (this.speed < 0) {
+					this.speed -= this.friction;
+				}
+				this.angle += this.moveAngle * Math.PI / 180;
+				this.x += this.speed * Math.sin(this.angle);
+				this.y -= this.speed * Math.cos(this.angle);
+			}
+		}
+		
+		//updateGameArea does the actual updating when called during each interval (see start function in myGameArea)
+		function updateGameArea() {
+			//clears the board
+			myGameArea.clear();
+			car.moveAngle = 0;
+			//car.speed = 0; ***Leave this commented***
+			//Depending on which key is pressed, the appropriate value is adjusted
+			if (myGameArea.keys && myGameArea.keys[37]) {
+				car.moveAngle = -2; 
+			}
+			
+			if (myGameArea.keys && myGameArea.keys[39]) {
+				car.moveAngle = 2;
+			}
+			
+			if (myGameArea.keys && myGameArea.keys[38]) {
+				car.acceleration += .001; 
+				car.friction = 0;
+			} else if (myGameArea.keys && myGameArea.keys[40]) {
+				car.acceleration += -.001; 
+				car.friction = 0;
+			} else {
+				car.acceleration = 0;
+				car.friction += -.00005;
+			}
+			
+			//These adjusted values are then used in newPos and update to redraw the new car
+			car.newPos();
+			car.update();
+		}
+		
+		</script>
+
+	</body>
+</html>
