@@ -117,10 +117,10 @@
 				car.moveAngle = 2;
 			}
 			
-			if (myGameArea.keys && myGameArea.keys[38]) {
+			if (myGameArea.keys && myGameArea.keys[38] && car.speed < 5) {
 				car.acceleration += .001; 
 				car.friction = 0;
-			} else if (myGameArea.keys && myGameArea.keys[40]) {
+			} else if (myGameArea.keys && myGameArea.keys[40] && car.speed > -5) {
 				car.acceleration += -.001; 
 				car.friction = 0;
 			} else {
