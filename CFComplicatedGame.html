@@ -13,15 +13,6 @@
 
 		<script>
 		
-		
-		
-		//*********************ROADMAP*************************
-		//NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
-		//THEN IMPLEMENT A TOP SPEED AND A FRICTION FORCE THAT SLOWLY BRINGS THE CAR TO A STOP WHEN NO BUTTONS ARE PRESSED
-		
-		
-		
-		
 		//car variable
 		var car;
 
@@ -117,10 +108,10 @@
 				car.moveAngle = 2;
 			}
 			
-			if (myGameArea.keys && myGameArea.keys[38]) {
+			if (myGameArea.keys && myGameArea.keys[38] && car.speed < 5) {
 				car.acceleration += .001; 
 				car.friction = 0;
-			} else if (myGameArea.keys && myGameArea.keys[40]) {
+			} else if (myGameArea.keys && myGameArea.keys[40] && car.speed > -5) {
 				car.acceleration += -.001; 
 				car.friction = 0;
 			} else {
