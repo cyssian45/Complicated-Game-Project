@@ -13,12 +13,12 @@
 
 		<script>
 		
-		//car variable
+		//Initially declaring car variable
 		var car;
 
 		function startGame() {
 			//creates new car object
-			car = new carConstructor(20, 40, "red", 300, 300);
+			car = new carConstructor(20, 40, "http://oi68.tinypic.com/kezx48.jpg", 300, 300);
 			//starts the game
 			myGameArea.start();
 		}
@@ -55,9 +55,10 @@
 		}
 
 		//Car constructor. Includes all aspects of the car (see parameters)
-		function carConstructor(width, height, color, x, y, type) {
-
-			this.type = type;
+		function carConstructor(width, height, color, x, y) {
+		
+			this.image = new Image();
+			this.image.src = color;
 			this.width = width;
 			this.height = height;
 			this.speed = 0;
@@ -74,8 +75,7 @@
 				ctx.save();
 				ctx.translate(this.x, this.y);
 				ctx.rotate(this.angle);
-				ctx.fillStyle = color;
-				ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);
+				ctx.drawImage(this.image, this.width / -2, this.height / -2, this.width, this.height);
 				ctx.restore();    
 			}
 			
