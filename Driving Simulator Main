@@ -24,6 +24,7 @@
         
         //car variable
         var car;
+        var startingArea;
 
         function startGame() {
             //creates new car object
