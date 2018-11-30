@@ -15,7 +15,9 @@
 		
 		//Initially declaring car variable
 		var car;
-
+		//starting zone variable
+		var starting_zone;
+			
 		function startGame() {
 			//creates new car object
 			car = new carConstructor(20, 40, "http://oi68.tinypic.com/kezx48.jpg", 300, 300);
@@ -91,6 +93,16 @@
 				this.x += this.speed * Math.sin(this.angle);
 				this.y -= this.speed * Math.cos(this.angle);
 			}
+		}
+		
+		//Boundry constructor. All properties of a given boundry are defined here as an arc.
+		function boundryConstructor(x, y, r, sAngle, eAngle) {
+			this.x = x;
+			this.y = y;
+			this.r = r;
+			this.sAngle = sAngle;
+			this.eAngle = eAngle;
+			
 		}
 		
 		//updateGameArea does the actual updating when called during each interval (see start function in myGameArea)
