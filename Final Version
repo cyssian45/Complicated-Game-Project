@@ -21,7 +21,7 @@
         
         
         //all rectangles are defined here
-        var rects = [[20, 20, 150, 575], 0]
+        var rects = [[20, 20, 100, 560], [20, 20, 760, 100], [710, 20, 70, 560], [596, 530, 184, 50], [482, 480, 164, 50], [368, 430, 164, 50], [254, 480, 164, 50], [140, 530, 164, 50], [140, 380, 50, 150], [190, 318, 50, 112], [140, 256, 50, 112], [190, 194, 50, 112], [140, 140, 50, 104], [140, 140, 550, 42], [640, 140, 50, 320]];
         
         //car variable
         var car;
@@ -123,8 +123,12 @@
             
             this.crashCheck = function() {
                 var crashStatus = true;
-                if (this.x > rects[0][0] + rects[0][2] || this.y > rects[0][1] + rects[0][3] || this.x < rects[0][0] || this.y < rects[0][1]) {
-                    crashStatus = false;
+                var i;
+                for (i = 0; i < rects.length; ++i) {
+                    if (this.x < rects[i][0] + rects[i][2] && this.x > rects[i][0] && this.y < rects[i][1] + rects[i][3] && this.y > rects[i][1]) {
+                        crashStatus = false;
+                        break;
+                    }
                 }
                 return crashStatus;
             }
@@ -132,7 +136,7 @@
         
         //updateGameArea does the actual updating when called during each interval (see start function in myGameArea)
         function updateGameArea() {
-            if (!car.crashCheck()) {
+            if (car.crashCheck()) {
                 myGameArea.context.fillStyle = "#000000"
                 myGameArea.context.font = "30px Arial";
                 myGameArea.context.fillText("Game Over", 10, 50)
@@ -140,9 +144,12 @@
             }
             //clears the board
             myGameArea.clear();
-            //Draws rectangle(s)
+            //Draws rectangles
             myGameArea.context.fillStyle = "#808080";
-            myGameArea.context.fillRect(rects[0][0], rects[0][1], rects[0][2], rects[0][3]);
+            var i;
+            for (i = 0; i < rects.length; ++i) {
+                myGameArea.context.fillRect(rects[i][0], rects[i][1], rects[i][2], rects[i][3]);
+            }
             car.moveAngle = 0;
             //car.speed = 0; ***Leave this commented***
             //Depending on which key is pressed, the appropriate value is adjusted
