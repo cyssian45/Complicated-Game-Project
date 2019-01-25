@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
+
+        <title>Racing Game</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <style>
-        canvas {
-            border:1px solid #d3d3d3;
-            background-color: #00ff00;
-        }
-    </style>
+        <link rel="stylesheet" type="text/css" href="CSS/styles.css">
+
     </head>
+
     <body onload="startGame()">
 
         <script>
-        
-        
-        
+
         //*********************ROADMAP*************************
         //NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
         //THEN IMPLEMENT A TOP SPEED AND A FRICTION FORCE THAT SLOWLY BRINGS THE CAR TO A STOP WHEN NO BUTTONS ARE PRESSED
@@ -27,7 +24,8 @@
         //car variable
         var car;
 
-        function startGame() {
+        function startGame() 
+        {
             //creates new car object
             car = new carConstructor(20, 40, "red", 70, 550);
             //starts the game
@@ -66,8 +64,8 @@
         }
 
         //Car constructor. Includes all aspects of the car (see parameters)
-        function carConstructor(width, height, color, x, y, type) {
-
+        function carConstructor(width, height, color, x, y, type)
+        {
             this.type = type;
             this.width = width;
             this.height = height;
@@ -80,7 +78,8 @@
             this.y = y;    
             
             //Update redraws the rectangle with the correct orientation (This controls the rotation of the car)
-            this.update = function() {
+            this.update = function() 
+            {
                 ctx = myGameArea.context;
                 ctx.save();
                 ctx.translate(this.x, this.y);
