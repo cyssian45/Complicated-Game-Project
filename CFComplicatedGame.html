@@ -15,10 +15,12 @@
 		
 		//Initially declaring car variable
 		var car;
+
 		//starting zone variable
 		var starting_zone;
 			
-		function startGame() {
+		function startGame()
+		{
 			//creates new car object
 			car = new carConstructor(20, 40, "http://oi68.tinypic.com/kezx48.jpg", 300, 300);
 			//starts the game
@@ -57,8 +59,8 @@
 		}
 
 		//Car constructor. Includes all aspects of the car (see parameters)
-		function carConstructor(width, height, color, x, y) {
-		
+		function carConstructor(width, height, color, x, y) 
+		{		
 			this.image = new Image();
 			this.image.src = color;
 			this.width = width;

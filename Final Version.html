@@ -19,7 +19,6 @@
         //NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
         //THEN IMPLEMENT A TOP SPEED AND A FRICTION FORCE THAT SLOWLY BRINGS THE CAR TO A STOP WHEN NO BUTTONS ARE PRESSED
         
-        
         //all rectangles are defined here
         var rects = [[20, 20, 100, 560], [20, 20, 760, 100], [710, 20, 70, 560], [596, 530, 184, 50], [482, 480, 164, 50], [368, 430, 164, 50], [254, 480, 164, 50], [140, 530, 164, 50], [140, 380, 50, 150], [190, 318, 50, 112], [140, 256, 50, 112], [190, 194, 50, 112], [140, 140, 50, 104], [140, 140, 550, 42], [640, 140, 50, 320], [552, 410, 138, 50], [280, 222, 320, 148], [552, 222, 48, 238]];
         
@@ -36,7 +35,8 @@
         }
 
         //sets up the game area
-        var myGameArea = {
+        var myGameArea = 
+        {
             canvas : document.createElement("canvas"),
             
             //Run when webpage opens. Initializes canvas. Sets up the event listeners that look for key presses.
