@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
 
@@ -9,7 +9,7 @@
 
     </head>
 
-    <body = onload="startGame()">
+    <body onload="startGame()">
     <script>
         //*********************ROADMAP*************************
         //NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
