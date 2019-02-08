@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html>
     <head>
 
@@ -7,14 +7,12 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-        <!-- Links the stylesheet so the webpage knows where to apply styling from -->
-        <link rel="stylesheet" type="text/css" href="CSS/styles.css">
-
     </head>
 
-    
-//*********************ROADMAP*************************
-//NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
+    <body = onload="startGame()">
+    <script>
+        //*********************ROADMAP*************************
+        //NEXT STEP IS TO MAKE KEYS ADJUST ACCELERATION INSTEAD OF VELOCITY, AND THEN HAVE THE ACCELERATION ADJUST THE VELOCITY ACCORDINGLY (DONE)
 //THEN IMPLEMENT A TOP SPEED AND A FRICTION FORCE THAT SLOWLY BRINGS THE CAR TO A STOP WHEN NO BUTTONS ARE PRESSED
 
 //all rectangles are defined here
@@ -209,6 +207,9 @@ function updateGameArea()
     car.checkEdges();
     car.update();
 }
+    </script>
+    </body>
+</html>
 
     </body>
 
