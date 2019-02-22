@@ -27,7 +27,7 @@ var car;
 function startGame() 
 {
     //creates new car object
-    car = new carConstructor(20, 40, "red", 400, 300);
+    car = new carConstructor(20, 40, "red", 70, 500);
 
     //starts the game
     myGameArea.start();
@@ -156,13 +156,13 @@ function carConstructor(width, height, color, x, y, type)
 //updateGameArea does the actual updating when called during each interval (see start function in myGameArea)
 function updateGameArea()
 {
-    /*if (car.crashCheck())
+    if (car.crashCheck())
     {
         myGameArea.context.fillStyle = "#000000";
         myGameArea.context.font = "30px Arial";
         myGameArea.context.fillText("Game Over", 10, 50);
         return;
-    }*/
+    }
     //checking win condition, not working
     if (car.winCheck()) {
         myGameArea.context.fillStyle = "#000000";
