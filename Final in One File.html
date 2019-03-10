@@ -14,7 +14,7 @@
 // Course Rectangles
 var rects = [[20, 20, 100, 560], [20, 20, 760, 100], [710, 20, 70, 560], [596, 530, 184, 50], [482, 480, 164, 50], [368, 430, 164, 50], [254, 480, 164, 50], [140, 530, 164, 50], [140, 380, 50, 150], [190, 318, 50, 112], [140, 256, 50, 112], [190, 194, 50, 112], [140, 140, 50, 104], [140, 140, 550, 42], [640, 140, 50, 320], [552, 410, 138, 50], [280, 222, 320, 148], [552, 222, 48, 238]];
 var finishLine = [330, 222, 8, 148];
-var powerupRectangles = [[60, 60, 20, 20]];
+var powerUpRectangles = [[60, 60, 20, 20]];
 
 //car variable
 var car;
@@ -160,9 +160,6 @@ function carConstructor(width, height, color, x, y, type)
 // Rectangles are global variables, so don't need passed in 
 function isCarOffPath(car)
 {
-    console.log("------------------");
-    console.log("FRAME OUTPUT: ");
-
     // Makes an object holding the car's coordinates 
     // Car coordinates are calculated only once in this method rather than once for every rectangle in the method that this one calls 
     var carCoordinates = 
@@ -234,40 +231,26 @@ function isCarInsideRectangle(carCoordinates, rectangle)
 
     // Checking if the top-left is NOT in the rectangle 
     if (carCoordinates.topLeftX < rectangleMinX || carCoordinates.topLeftX > rectangleMaxX || carCoordinates.topLeftY < rectangleMinY || carCoordinates.topLeftY > rectangleMaxY)
-    {
-        console.log("Top-Left point is not inside rectangle. Car is not in this rectangle.");  
+    { 
         carIsInRectangle = false;
     }
 
     // Checking if the top-right is NOT in the rectangle
     else if (carCoordinates.topRightX < rectangleMinX || carCoordinates.topRightX > rectangleMaxX || carCoordinates.topRightY < rectangleMinY || carCoordinates.topRightY > rectangleMaxY)
-    {
-        console.log("Top-Right point is not inside rectangle. Car is not in this rectangle.");         
+    {        
         carIsInRectangle = false;   
     }
 
     // Checking if the bottom-left is NOT in the rectangle
     else if (carCoordinates.bottomLeftX < rectangleMinX || carCoordinates.bottomLeftX > rectangleMaxX || carCoordinates.bottomLeftY < rectangleMinY || carCoordinates.bottomLeftY > rectangleMaxY)
     {
-        console.log("Bottom-Left point is not inside rectangle. Car is not in this rectangle.");
         carIsInRectangle = false;
     }
 
     // Checking if the bottom-right is NOT in the rectangle 
     else if (carCoordinates.bottomRightX < rectangleMinX || carCoordinates.bottomRightX > rectangleMaxX || carCoordinates.bottomRightY < rectangleMinY || carCoordinates.bottomRightY > rectangleMaxY)
     {
-        console.log("Bottom-Right point is not inside rectangle. Car is not in this rectangle.");
         carIsInRectangle = false;
-    }
-
-    if (carIsInRectangle)
-    {
-        console.log("Car is inside this rectangle.");
-    }
-
-    else 
-    {
-        console.log("Car is not in this rectangle.");
     }
 
     return carIsInRectangle;
@@ -312,10 +295,10 @@ function updateGameArea()
     car.moveAngle = 0;
 
     // Draws the rectangles for the powerups 
-    for (let i = 0; i < powerupRectangles.length; i++)
+    for (let i = 0; i < powerUpRectangles.length; i++)
     {
         myGameArea.context.fillStyle = "rgb(0, 191, 255)";
-        myGameArea.context.fillRect(powerupRectangles[i][0], powerupRectangles[i][1], powerupRectangles[i][2], powerupRectangles[i][3]);
+        myGameArea.context.fillRect(powerUpRectangles[i][0], powerUpRectangles[i][1], powerUpRectangles[i][2], powerUpRectangles[i][3]);
     }
 
     //car.speed = 0; ***Leave this commented***
