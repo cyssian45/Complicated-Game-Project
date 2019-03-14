@@ -226,9 +226,6 @@ function angleShift(initialValue)
 
 function isPointInsideARectangle(point)
 {
-    console.log("Point: ");
-    console.log(point);
-
     let isPointInsideARectangle = false;
 
     // Todo - Make any variables used again and again every frame global to save performance (not necessary, but might be worth talking about during the presentation or at least touching on) 
@@ -243,9 +240,6 @@ function isPointInsideARectangle(point)
 
         if (point.x >= rectangleMinX && point.x <= rectangleMaxX && point.y >= rectangleMinY && point.y <= rectangleMaxY)
         {
-            console.log("In The Following Rectangle: ");
-            console.log(rects[i]);
-
             isPointInsideARectangle = true;
             break;
         }
