@@ -152,7 +152,7 @@ function carConstructor(width, height, color, x, y, type)
     // Todo - Implement the method for this (not difficult
     this.winCheck = function() 
     {
-        return false;
+        return isCarTouchingRectangle(this, finishLine);
     }
 }
 
@@ -172,7 +172,7 @@ function updateGameArea()
     {
         myGameArea.context.fillStyle = "#000000";
         myGameArea.context.font = "30px Arial";
-        myGameArea.context.fillText("You Won!", 10, 50);
+        myGameArea.context.fillText("You Won!", 30, 50);
         return;
     }
 
@@ -243,7 +243,7 @@ function updateGameArea()
  * 
  *  (You don't need to know how this works. It's pretty complicated,
  *  especially for beginners. We'll explain the general idea behind it, 
- *  though, as part of the presentation) 
+ *  though, as part of the presentation.)
  * 
  * **************************************************************/
 
@@ -254,6 +254,43 @@ function Point(x, y)
 {
   this.x = x;
   this.y = y;
+}
+
+function isCarTouchingRectangle(car, rectangle)
+{
+    let defaultCarCoordinates = 
+    {
+        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
+        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
+        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
+        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
+    }
+
+    // Determines what positions the corners are at given the car's current rotation
+    let actualCarCoordinates = 
+    {
+        topLeft: convertBasePositionToActualPosition(defaultCarCoordinates.topLeft, car),
+        topRight: convertBasePositionToActualPosition(defaultCarCoordinates.topRight, car),
+        bottomLeft: convertBasePositionToActualPosition(defaultCarCoordinates.bottomLeft, car),
+        bottomRight: convertBasePositionToActualPosition(defaultCarCoordinates.bottomRight, car)
+    }
+
+    let rectangleMinX = rectangle[0];
+    let rectangleMaxX = rectangle[0] + rectangle[2];
+    let rectangleMinY = rectangle[1];
+    let rectangleMaxY = rectangle[1] + rectangle[3];
+
+    let isCarTouchingRectangle = false;
+
+    if (actualCarCoordinates.topLeft.x >= rectangleMinX && actualCarCoordinates.topLeft.x <= rectangleMaxX && actualCarCoordinates.topLeft.y >= rectangleMinY && actualCarCoordinates.topLeft.y <= rectangleMaxY ||
+        actualCarCoordinates.topRight.x >= rectangleMinX && actualCarCoordinates.topRight.x <= rectangleMaxX && actualCarCoordinates.topRight.y >= rectangleMinY && actualCarCoordinates.topRight.y <= rectangleMaxY ||
+        actualCarCoordinates.bottomLeft.x >= rectangleMinX && actualCarCoordinates.bottomLeft.x <= rectangleMaxX && actualCarCoordinates.bottomLeft.y >= rectangleMinY && actualCarCoordinates.bottomLeft.y <= rectangleMaxY ||
+        actualCarCoordinates.bottomRight.x >= rectangleMinX && actualCarCoordinates.bottomRight.x <= rectangleMaxX && actualCarCoordinates.bottomRight.y >= rectangleMinY && actualCarCoordinates.bottomRight.y <= rectangleMaxY)
+    {
+        isCarTouchingRectangle = true;
+    }
+
+    return isCarTouchingRectangle;        
 }
 
 /** 
