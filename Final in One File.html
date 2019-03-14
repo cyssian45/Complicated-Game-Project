@@ -247,7 +247,9 @@ function updateGameArea()
  * 
  * **************************************************************/
 
-// Used to simplify many aspects of collision checking and make code more concise 
+// Makes a Point "object"
+// Object = A reusable component with properties and methods. This one just has two properties - X and Y - and no child methods. 
+// The car in our program is an object too; This is a much simpler example of one. 
 function Point(x, y) 
 {
   this.x = x;
@@ -257,13 +259,14 @@ function Point(x, y)
 /** 
  * This function is the base method of the pixel-perfect collision system. It's pretty complicated; We don't expect you to understand all of it. 
  * 
- * All you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
+ * If you even look at it, all you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
  * corners and figures out if it's somewhere on the path. If all four points are, there is no collision. If any of the four points
  * isn't, there is a collision and the game over screen is triggered because this function will return false. 
  * 
  * This collision system has one flaw. If you clip into a corner with a part of the car that isn't a corner, but remove yourself from
  * the wall before a corner touches, collision won't be detected. This could be fixed by using a different collision system or by 
- * adding more points to check (for instance, the midpoint of each side). 
+ * adding more points to check (for instance, the midpoint of each side). The latter will never technically be pixel perfect but as your
+ * number of sampled points approaches the number of pixels on the edge of the car it gets closer and closer. 
  * 
  * */
 function isCarOffPath(car)
@@ -294,14 +297,16 @@ function isCarOffPath(car)
     else if (!isPointInsideARectangle(actualCarCoordinates.bottomLeft)) { areAllPointsInsideARectangle = false; }
     else if (!isPointInsideARectangle(actualCarCoordinates.bottomRight)) { areAllPointsInsideARectangle = false; }
 
+    // If you're wondering why this is negated, the boolean value here is the opposite of what we're trying to return as part of the method
+    // If they're "all inside a rectangle", it's on the path. Therefore, this function should return that it's "not off the path", or, on the path.  
     return !areAllPointsInsideARectangle;
 }
 
 // Returns a point 
 function convertBasePositionToActualPosition(defaultPoint, car)
 {    
-    // If there's anything you don't need to understand how it works in this program, it's this
-    // Fairly basic Trig / Linear Algebra transformation, but honestly pretty complicated and it took me very long to figure out, even with looking stuff up 
+    // You don't need to understand how this works. It's some fairly complex trig/linear algebra
+    // What you should take away from it is that it makes a new point object and calculates where it should be based on its original position and what angle the car is at. 
     return new Point 
     (
         car.x + (defaultPoint.x - car.x) * Math.sin(angleShift(car.angle)) - (defaultPoint.y - car.y) * Math.cos(angleShift(car.angle)),
@@ -309,20 +314,19 @@ function convertBasePositionToActualPosition(defaultPoint, car)
     )   
 }
 
-// Converts Our System to JS-Native Degree System:
-// Current System: Starts at Zero Degrees = North, CW is Positive, CCW is Negative
-// Ideal System: Starts at Zero Degrees = East, CW is Negative, CCW is Positive (Identical to the unit circle) 
+// Our angle convention is where Zero Degrees is at "North" on a circle, and clockwise is positive. 
+// This method switches that to the "correct" trig convention (look up the unit circle) so that we can use it with JS's trig functions 
 function angleShift(initialValue)
 {
     // Might have to add a "% 360" here if turning more than 360 degrees here leads to faulty collisions 
     return (Math.PI / 2) + (-initialValue);
 }
 
+// Does exactly what it says - Functions should be as self-documenting as possible w/o needing comments 
 function isPointInsideARectangle(point)
 {
     let isPointInsideARectangle = false;
 
-    // Todo - Make any variables used again and again every frame global to save performance (not necessary, but might be worth talking about during the presentation or at least touching on) 
     // Iterates through each rectangle on the course 
     for (let i = 0; i < rects.length; i++)
     {
@@ -341,7 +345,6 @@ function isPointInsideARectangle(point)
 
     return isPointInsideARectangle;
 }
-
 
 </script>
 
