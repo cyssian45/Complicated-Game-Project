@@ -156,6 +156,7 @@ function carConstructor(width, height, color, x, y, type)
 
     this.powerupCheck = function()
     {
+        // Only checks collision if the car hasn't touched the powerup yet 
         if (!bluePowerupHasBeenCollected)
         {
             if (isCarTouchingRectangle(this, powerUpRectangles[0]))
@@ -209,7 +210,7 @@ function updateGameArea()
     // Resets the car's current turning direction every frame
     car.moveAngle = 0;
 
-    // Drawing the blue powerup 
+    // Only draws the powerup if the global variable indicates that it hasn't been picked up 
     if (!bluePowerupHasBeenCollected)
     {
         // These all need drawn individually because they are dynamically drawn based on whether they have been picked up 
