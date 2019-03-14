@@ -149,12 +149,25 @@ function carConstructor(width, height, color, x, y, type)
     }
 
     // Checks if the car is touching the finish line 
-    // Todo - Implement the method for this (not difficult
     this.winCheck = function() 
     {
         return isCarTouchingRectangle(this, finishLine);
     }
+
+    this.powerupCheck = function()
+    {
+        if (!bluePowerupHasBeenCollected)
+        {
+            if (isCarTouchingRectangle(this, powerUpRectangles[0]))
+            {
+                this.speed *= 2; 
+                bluePowerupHasBeenCollected = true;
+            }
+        }        
+    }
 }
+
+var bluePowerupHasBeenCollected = false;
 
 // Processed the next "frame" of the game - Similar to a draw loop in a game. 
 // See setInterval in the constructor for how frequently this is called. 
@@ -176,6 +189,8 @@ function updateGameArea()
         return;
     }
 
+    car.powerupCheck();
+
     // Clears the board
     myGameArea.clear();
 
@@ -194,11 +209,12 @@ function updateGameArea()
     // Resets the car's current turning direction every frame
     car.moveAngle = 0;
 
-    // Draws the rectangles for the powerups 
-    for (let i = 0; i < powerUpRectangles.length; i++)
+    // Drawing the blue powerup 
+    if (!bluePowerupHasBeenCollected)
     {
+        // These all need drawn individually because they are dynamically drawn based on whether they have been picked up 
         myGameArea.context.fillStyle = "rgb(0, 191, 255)";
-        myGameArea.context.fillRect(powerUpRectangles[i][0], powerUpRectangles[i][1], powerUpRectangles[i][2], powerUpRectangles[i][3]);
+        myGameArea.context.fillRect(powerUpRectangles[0][0], powerUpRectangles[0][1], powerUpRectangles[0][2], powerUpRectangles[0][3]);
     }
 
     //car.speed = 0; ***Leave this commented***
