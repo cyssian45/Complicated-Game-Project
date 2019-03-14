@@ -145,132 +145,107 @@ function carConstructor(width, height, color, x, y, type)
     // Checks if the car would go outside of the 800x600 canvas 
     this.crashCheck = function()
     {
-        // Passes in the car object using "this", which refers to the current "context" (instance of the object) 
-        // Note to self - Collision is much easier to do if you make the rectangles the walls instead of the paths 
-        console.log("----------------");
-        console.log("Collision Frame Data: ");
         return isCarOffPath(this);
     }
 
     // Checks if the car is touching the finish line 
+    // Todo - Implement the method for this (not difficult
     this.winCheck = function() 
     {
         return false;
     }
 }
 
-// Rectangles are global variables, so don't need passed in 
+// Used to simplify many aspects of collision checking and make code more concise 
+function Point(x, y) 
+{
+  this.x = x;
+  this.y = y;
+}
+
+/** 
+ * This function is the base method of the pixel-perfect collision system. It's pretty complicated; We don't expect you to understand all of it. 
+ * 
+ * All you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
+ * corners and figures out if it's somewhere on the path. If all four points are, there is no collision. If any of the four points
+ * isn't, there is a collision and the game over screen is triggered because this function will return false. 
+ * 
+ * This collision system has one flaw. If you clip into a corner with a part of the car that isn't a corner, but remove yourself from
+ * the wall before a corner touches, collision won't be detected. This could be fixed by using a different collision system or by 
+ * adding more points to check (for instance, the midpoint of each side). 
+ * 
+ * */
 function isCarOffPath(car)
 {
-    // Holds x,y coordinates for 
-    var actualCarCoordinates = 
+    let defaultCarCoordinates = 
     {
-        topLeft: {x: 0, y: 0},
-        topRight: {x: 0, y: 0},
-        bottomLeft: {x: 0, y: 0},
-        bottomRight: {x: 0, y: 0},
-        topMiddle: {x: 0, y: 0},
-        rightMiddle: {x: 0, y: 0},
-        leftMiddle: {x: 0, y: 0},
-        bottomMiddle: {x: 0, y: 0}
+        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
+        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
+        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
+        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
     }
 
-    // Holds x,y coordinates for 
-    var defaultCarCoordinates = 
+    let actualCarCoordinates = 
     {
-        topLeft: {x: 0, y: 0},
-        topRight: {x: 0, y: 0},
-        bottomLeft: {x: 0, y: 0},
-        bottomRight: {x: 0, y: 0},
-        topMiddle: {x: 0, y: 0},
-        rightMiddle: {x: 0, y: 0},
-        leftMiddle: {x: 0, y: 0},
-        bottomMiddle: {x: 0, y: 0}
+        topLeft: convertBasePositionToActualPosition(defaultCarCoordinates.topLeft, car),
+        topRight: convertBasePositionToActualPosition(defaultCarCoordinates.topRight, car),
+        bottomLeft: convertBasePositionToActualPosition(defaultCarCoordinates.bottomLeft, car),
+        bottomRight: convertBasePositionToActualPosition(defaultCarCoordinates.bottomRight, car)
     }
 
-    // Calculating default x-values for use in next step 
-    defaultCarCoordinates.topLeft.x = defaultCarCoordinates.leftMiddle.x = defaultCarCoordinates.bottomLeft.x = car.x - (car.width / 2); // Left Column
-    defaultCarCoordinates.topRight.x = defaultCarCoordinates.rightMiddle.x = defaultCarCoordinates.bottomRight.x = car.x + (car.width / 2); // Right Column
-    defaultCarCoordinates.topMiddle.x = defaultCarCoordinates.bottomMiddle.x = car.x; // Middle Column
+    // Checking the four corners to see if they're all in a rectangle
+    let areAllPointsInsideARectangle = true;
 
-    // Calculating default y-values for use in next step 
-    defaultCarCoordinates.topLeft.y = defaultCarCoordinates.topMiddle.y = defaultCarCoordinates.topRight.y = car.y - (car.height / 2); // Top Row
-    defaultCarCoordinates.bottomLeft.y = defaultCarCoordinates.bottomMiddle.y = defaultCarCoordinates.bottomRight.y = car.y + (car.height / 2); // Bottom Row
-    defaultCarCoordinates.leftMiddle.y = defaultCarCoordinates.rightMiddle.y = car.y; // Middle Row 
-    
-    // Determining correct corners using trig trsnformation 
-    actualCarCoordinates.topLeft.x = car.x + (defaultCarCoordinates.topLeft.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.topLeft.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.topLeft.y = car.y - (defaultCarCoordinates.topLeft.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.topLeft.y - car.y) * Math.cos(car.angle);  
-    actualCarCoordinates.topRight.x = car.x + (defaultCarCoordinates.topRight.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.topRight.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.topRight.y = car.y - (defaultCarCoordinates.topRight.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.topRight.y - car.y) * Math.cos(car.angle);  
-    actualCarCoordinates.bottomLeft.x = car.x + (defaultCarCoordinates.bottomLeft.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.bottomLeft.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.bottomLeft.y = car.y - (defaultCarCoordinates.bottomLeft.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.bottomLeft.y - car.y) * Math.cos(car.angle); 
-    actualCarCoordinates.bottomRight.x = car.x + (defaultCarCoordinates.bottomRight.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.bottomRight.y - car.y) * Math.sin(car.angle); 
-    actualCarCoordinates.bottomRight.y = car.y - (defaultCarCoordinates.bottomRight.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.bottomRight.y - car.y) * Math.cos(car.angle);
+    if (!isPointInsideARectangle(actualCarCoordinates.topLeft)) { areAllPointsInsideARectangle = false; }    
+    else if (!isPointInsideARectangle(actualCarCoordinates.topRight)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomLeft)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomRight)) { areAllPointsInsideARectangle = false; }
 
-    // Determining correct midpoint using trig transformation 
-    actualCarCoordinates.topMiddle.x = car.x + (defaultCarCoordinates.topMiddle.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.topMiddle.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.topMiddle.y = car.y - (defaultCarCoordinates.topMiddle.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.topMiddle.y - car.y) * Math.cos(car.angle);  
-    actualCarCoordinates.leftMiddle.x = car.x + (defaultCarCoordinates.leftMiddle.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.leftMiddle.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.leftMiddle.y = car.y - (defaultCarCoordinates.leftMiddle.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.leftMiddle.y - car.y) * Math.cos(car.angle);  
-    actualCarCoordinates.rightMiddle.x = car.x + (defaultCarCoordinates.rightMiddle.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.rightMiddle.y - car.y) * Math.sin(car.angle);
-    actualCarCoordinates.rightMiddle.y = car.y - (defaultCarCoordinates.rightMiddle.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.rightMiddle.y - car.y) * Math.cos(car.angle); 
-    actualCarCoordinates.bottomMiddle.x = car.x + (defaultCarCoordinates.bottomMiddle.x - car.x) * Math.cos(car.angle) + (defaultCarCoordinates.bottomMiddle.y - car.y) * Math.sin(car.angle); 
-    actualCarCoordinates.bottomMiddle.y = car.y - (defaultCarCoordinates.bottomMiddle.x - car.x) * Math.sin(car.angle) + (defaultCarCoordinates.bottomMiddle.y - car.y) * Math.cos(car.angle);
-
-    // Assumed to not crash until it does crash 
-    let isCarOffPath = true;
-
-    if (allCarPointsAreInsideARectangle(actualCarCoordinates))
-    {
-        isCarOffPath = false;
-    }
-
-    if (isCarOffPath)
-    {
-        console.log(actualCarCoordinates);
-    }
-
-    return isCarOffPath;
+    return !areAllPointsInsideARectangle;
 }
 
-function allCarPointsAreInsideARectangle(carCoordinates)
-{
-    let allCarPointsAreInsideARectangle = true;
-
-    // Top-Left, Top-Middle, Top-Right
-    if (!isPointInsideARectangle(carCoordinates.topLeft.x, carCoordinates.topLeft.y)) { allCarPointsAreInsideARectangle = false; }
-    else if (!isPointInsideARectangle(carCoordinates.topMiddle.x, carCoordinates.topMiddle.y)) { allCarPointsAreInsideARectangle = false; }
-    else if (!isPointInsideARectangle(carCoordinates.topRight.x, carCoordinates.topRight.y)) { allCarPointsAreInsideARectangle = false; }
-
-    // Middle-Left, Middle-Right
-    else if (!isPointInsideARectangle(carCoordinates.leftMiddle.x, carCoordinates.leftMiddle.y)) { allCarPointsAreInsideARectangle = false; }
-    else if (!isPointInsideARectangle(carCoordinates.rightMiddle.x, carCoordinates.rightMiddle.y)) { allCarPointsAreInsideARectangle = false; }
-
-    // Bottom-Left, Bottom-Middle, Bottom-Right
-    else if (!isPointInsideARectangle(carCoordinates.bottomLeft.x, carCoordinates.bottomLeft.y)) { allCarPointsAreInsideARectangle = false; }
-    else if (!isPointInsideARectangle(carCoordinates.bottomMiddle.x, carCoordinates.bottomMiddle.y)) { allCarPointsAreInsideARectangle = false; }
-    else if (!isPointInsideARectangle(carCoordinates.bottomRight.x, carCoordinates.bottomRight.y)) { allCarPointsAreInsideARectangle = false; }
-
-    return allCarPointsAreInsideARectangle;
+// Returns a point 
+function convertBasePositionToActualPosition(defaultPoint, car)
+{    
+    // If there's anything you don't need to understand how it works in this program, it's this. Trig / Linear Algebra
+    return new Point 
+    (
+        car.x + (defaultPoint.x - car.x) * Math.sin(angleShift(car.angle)) - (defaultPoint.y - car.y) * Math.cos(angleShift(car.angle)),
+        car.y + (defaultPoint.x - car.x) * Math.cos(angleShift(car.angle)) + (defaultPoint.y - car.y) * Math.sin(angleShift(car.angle))
+    )   
 }
 
-function isPointInsideARectangle(x, y)
+// Current System: Starts at North, CW is Positive, CCW is Negative
+// Intended System to work w/ JS Trig Methods: Starts at East, CW is Negative, CCW is Positive
+// This method just does the conversion in between those two 
+function angleShift(initialValue)
 {
-    let rectangleMinX, rectangleMaxX, rectangleMinY, rectangleMaxY;
+    // Might have to add a "% 360" here if turning more than 360 degrees here leads to faulty collisions 
+    return (Math.PI / 2) + (-initialValue);
+}
+
+function isPointInsideARectangle(point)
+{
+    console.log("Point: ");
+    console.log(point);
+
     let isPointInsideARectangle = false;
 
+    // Todo - Make any variables used again and again every frame global to save performance (not necessary, but might be worth talking about during the presentation or at least touching on) 
     // Iterates through each rectangle on the course 
     for (let i = 0; i < rects.length; i++)
     {
         // Determining the bounds for the rectangle 
-        rectangleMinX = rects[i][0];
-        rectangleMaxX = rects[i][0] + rects[i][2];
-        rectangleMinY = rects[i][1];
-        rectangleMaxY = rects[i][1] + rects[i][3];
+        let rectangleMinX = rects[i][0];
+        let rectangleMaxX = rects[i][0] + rects[i][2];
+        let rectangleMinY = rects[i][1];
+        let rectangleMaxY = rects[i][1] + rects[i][3];
 
-        if (x >= rectangleMinX && x <= rectangleMaxX && y >= rectangleMinY && y <= rectangleMaxY)
+        if (point.x >= rectangleMinX && point.x <= rectangleMaxX && point.y >= rectangleMinY && point.y <= rectangleMaxY)
         {
+            console.log("In The Following Rectangle: ");
+            console.log(rects[i]);
+
             isPointInsideARectangle = true;
             break;
         }
