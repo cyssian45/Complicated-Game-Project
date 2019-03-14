@@ -156,98 +156,6 @@ function carConstructor(width, height, color, x, y, type)
     }
 }
 
-// Used to simplify many aspects of collision checking and make code more concise 
-function Point(x, y) 
-{
-  this.x = x;
-  this.y = y;
-}
-
-/** 
- * This function is the base method of the pixel-perfect collision system. It's pretty complicated; We don't expect you to understand all of it. 
- * 
- * All you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
- * corners and figures out if it's somewhere on the path. If all four points are, there is no collision. If any of the four points
- * isn't, there is a collision and the game over screen is triggered because this function will return false. 
- * 
- * This collision system has one flaw. If you clip into a corner with a part of the car that isn't a corner, but remove yourself from
- * the wall before a corner touches, collision won't be detected. This could be fixed by using a different collision system or by 
- * adding more points to check (for instance, the midpoint of each side). 
- * 
- * */
-function isCarOffPath(car)
-{
-    let defaultCarCoordinates = 
-    {
-        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
-        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
-        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
-        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
-    }
-
-    let actualCarCoordinates = 
-    {
-        topLeft: convertBasePositionToActualPosition(defaultCarCoordinates.topLeft, car),
-        topRight: convertBasePositionToActualPosition(defaultCarCoordinates.topRight, car),
-        bottomLeft: convertBasePositionToActualPosition(defaultCarCoordinates.bottomLeft, car),
-        bottomRight: convertBasePositionToActualPosition(defaultCarCoordinates.bottomRight, car)
-    }
-
-    // Checking the four corners to see if they're all in a rectangle
-    let areAllPointsInsideARectangle = true;
-
-    if (!isPointInsideARectangle(actualCarCoordinates.topLeft)) { areAllPointsInsideARectangle = false; }    
-    else if (!isPointInsideARectangle(actualCarCoordinates.topRight)) { areAllPointsInsideARectangle = false; }
-    else if (!isPointInsideARectangle(actualCarCoordinates.bottomLeft)) { areAllPointsInsideARectangle = false; }
-    else if (!isPointInsideARectangle(actualCarCoordinates.bottomRight)) { areAllPointsInsideARectangle = false; }
-
-    return !areAllPointsInsideARectangle;
-}
-
-// Returns a point 
-function convertBasePositionToActualPosition(defaultPoint, car)
-{    
-    // If there's anything you don't need to understand how it works in this program, it's this. Trig / Linear Algebra
-    return new Point 
-    (
-        car.x + (defaultPoint.x - car.x) * Math.sin(angleShift(car.angle)) - (defaultPoint.y - car.y) * Math.cos(angleShift(car.angle)),
-        car.y + (defaultPoint.x - car.x) * Math.cos(angleShift(car.angle)) + (defaultPoint.y - car.y) * Math.sin(angleShift(car.angle))
-    )   
-}
-
-// Current System: Starts at North, CW is Positive, CCW is Negative
-// Intended System to work w/ JS Trig Methods: Starts at East, CW is Negative, CCW is Positive
-// This method just does the conversion in between those two 
-function angleShift(initialValue)
-{
-    // Might have to add a "% 360" here if turning more than 360 degrees here leads to faulty collisions 
-    return (Math.PI / 2) + (-initialValue);
-}
-
-function isPointInsideARectangle(point)
-{
-    let isPointInsideARectangle = false;
-
-    // Todo - Make any variables used again and again every frame global to save performance (not necessary, but might be worth talking about during the presentation or at least touching on) 
-    // Iterates through each rectangle on the course 
-    for (let i = 0; i < rects.length; i++)
-    {
-        // Determining the bounds for the rectangle 
-        let rectangleMinX = rects[i][0];
-        let rectangleMaxX = rects[i][0] + rects[i][2];
-        let rectangleMinY = rects[i][1];
-        let rectangleMaxY = rects[i][1] + rects[i][3];
-
-        if (point.x >= rectangleMinX && point.x <= rectangleMaxX && point.y >= rectangleMinY && point.y <= rectangleMaxY)
-        {
-            isPointInsideARectangle = true;
-            break;
-        }
-    }
-
-    return isPointInsideARectangle;
-}
-
 // Processed the next "frame" of the game - Similar to a draw loop in a game. 
 // See setInterval in the constructor for how frequently this is called. 
 function updateGameArea()
@@ -328,6 +236,112 @@ function updateGameArea()
     car.checkEdges();
     car.update();
 }
+
+/****************************************************************
+ * 
+ *            COLLISION
+ * 
+ *  (You don't need to know how this works. It's pretty complicated,
+ *  especially for beginners. We'll explain the general idea behind it, 
+ *  though, as part of the presentation) 
+ * 
+ * **************************************************************/
+
+// Used to simplify many aspects of collision checking and make code more concise 
+function Point(x, y) 
+{
+  this.x = x;
+  this.y = y;
+}
+
+/** 
+ * This function is the base method of the pixel-perfect collision system. It's pretty complicated; We don't expect you to understand all of it. 
+ * 
+ * All you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
+ * corners and figures out if it's somewhere on the path. If all four points are, there is no collision. If any of the four points
+ * isn't, there is a collision and the game over screen is triggered because this function will return false. 
+ * 
+ * This collision system has one flaw. If you clip into a corner with a part of the car that isn't a corner, but remove yourself from
+ * the wall before a corner touches, collision won't be detected. This could be fixed by using a different collision system or by 
+ * adding more points to check (for instance, the midpoint of each side). 
+ * 
+ * */
+function isCarOffPath(car)
+{
+    // Determines what positions the corners would be in without any rotation (needed for next step) 
+    let defaultCarCoordinates = 
+    {
+        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
+        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
+        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
+        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
+    }
+
+    // Determines what positions the corners are at given the car's current rotation
+    let actualCarCoordinates = 
+    {
+        topLeft: convertBasePositionToActualPosition(defaultCarCoordinates.topLeft, car),
+        topRight: convertBasePositionToActualPosition(defaultCarCoordinates.topRight, car),
+        bottomLeft: convertBasePositionToActualPosition(defaultCarCoordinates.bottomLeft, car),
+        bottomRight: convertBasePositionToActualPosition(defaultCarCoordinates.bottomRight, car)
+    }
+
+    let areAllPointsInsideARectangle = true;
+
+    // If any of the points are "not in a rectangle" then the car is "off path" and this entire method returns false 
+    if (!isPointInsideARectangle(actualCarCoordinates.topLeft)) { areAllPointsInsideARectangle = false; }    
+    else if (!isPointInsideARectangle(actualCarCoordinates.topRight)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomLeft)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomRight)) { areAllPointsInsideARectangle = false; }
+
+    return !areAllPointsInsideARectangle;
+}
+
+// Returns a point 
+function convertBasePositionToActualPosition(defaultPoint, car)
+{    
+    // If there's anything you don't need to understand how it works in this program, it's this
+    // Fairly basic Trig / Linear Algebra transformation, but honestly pretty complicated and it took me very long to figure out, even with looking stuff up 
+    return new Point 
+    (
+        car.x + (defaultPoint.x - car.x) * Math.sin(angleShift(car.angle)) - (defaultPoint.y - car.y) * Math.cos(angleShift(car.angle)),
+        car.y + (defaultPoint.x - car.x) * Math.cos(angleShift(car.angle)) + (defaultPoint.y - car.y) * Math.sin(angleShift(car.angle))
+    )   
+}
+
+// Converts Our System to JS-Native Degree System:
+// Current System: Starts at Zero Degrees = North, CW is Positive, CCW is Negative
+// Ideal System: Starts at Zero Degrees = East, CW is Negative, CCW is Positive (Identical to the unit circle) 
+function angleShift(initialValue)
+{
+    // Might have to add a "% 360" here if turning more than 360 degrees here leads to faulty collisions 
+    return (Math.PI / 2) + (-initialValue);
+}
+
+function isPointInsideARectangle(point)
+{
+    let isPointInsideARectangle = false;
+
+    // Todo - Make any variables used again and again every frame global to save performance (not necessary, but might be worth talking about during the presentation or at least touching on) 
+    // Iterates through each rectangle on the course 
+    for (let i = 0; i < rects.length; i++)
+    {
+        // Determining the bounds for the rectangle 
+        let rectangleMinX = rects[i][0];
+        let rectangleMaxX = rects[i][0] + rects[i][2];
+        let rectangleMinY = rects[i][1];
+        let rectangleMaxY = rects[i][1] + rects[i][3];
+
+        if (point.x >= rectangleMinX && point.x <= rectangleMaxX && point.y >= rectangleMinY && point.y <= rectangleMaxY)
+        {
+            isPointInsideARectangle = true;
+            break;
+        }
+    }
+
+    return isPointInsideARectangle;
+}
+
 
 </script>
 
