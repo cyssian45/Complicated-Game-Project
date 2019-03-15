@@ -78,7 +78,7 @@ function carConstructor(width, height, color, x, y, type)
     this.x = x;
     this.y = y;    
     
-    // Update redraws the rectangle with the correct orientation (This controls the rotation of the car)
+    // Redraws the car, updating its position on-screen to 
     this.update = function() 
     {
         ctx = myGameArea.context;
@@ -224,7 +224,7 @@ function updateGameArea()
 
 /****************************************************************
  * 
- *            COLLISION
+ *                     COLLISION
  * 
  *  (You don't need to know how this works. It's pretty complicated,
  *  especially for beginners. We'll explain the general idea behind it, 
@@ -232,15 +232,14 @@ function updateGameArea()
  * 
  * **************************************************************/
 
-// Makes a Point "object"
-// Object = A reusable component with properties and methods. This one just has two properties - X and Y - and no child methods. 
-// The car in our program is an object too; This is a much simpler example of one. 
+// Makes a point class so new points can be declared with x and y properties 
 function Point(x, y) 
 {
   this.x = x;
   this.y = y;
 }
 
+// Used t
 function isCarTouchingRectangle(car, rectangle)
 {
     let defaultCarCoordinates = 
@@ -278,22 +277,13 @@ function isCarTouchingRectangle(car, rectangle)
     return isCarTouchingRectangle;        
 }
 
-/** 
- * This function is the base method of the pixel-perfect collision system. It's pretty complicated; We don't expect you to understand all of it. 
- * 
- * If you even look at it, all you need to take from this is that it first figures out the coordinates of all the car's corners, then takes each of those
- * corners and figures out if it's somewhere on the path. If all four points are, there is no collision. If any of the four points
- * isn't, there is a collision and the game over screen is triggered because this function will return false. 
- * 
- * This collision system has one flaw. If you clip into a corner with a part of the car that isn't a corner, but remove yourself from
- * the wall before a corner touches, collision won't be detected. This could be fixed by using a different collision system or by 
- * adding more points to check (for instance, the midpoint of each side). The latter will never technically be pixel perfect but as your
- * number of sampled points approaches the number of pixels on the edge of the car it gets closer and closer. 
- * 
- * */
+// Used to check if car is on the path
+// This checks if any point is off a rectangle, not that any point is inside a rectangle like isCarTouchingRectangle
+// Because our course is our rectangles and not the walls, this needs to be much more complex :P 
 function isCarOffPath(car)
 {
-    // Determines what positions the corners would be in without any rotation (needed for next step) 
+    // Determines what positions the corners would be in without any rotation
+    // Each corner is defined as a "Point" - Has x and y properties / data fields 
     let defaultCarCoordinates = 
     {
         topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
@@ -331,17 +321,9 @@ function convertBasePositionToActualPosition(defaultPoint, car)
     // What you should take away from it is that it makes a new point object and calculates where it should be based on its original position and what angle the car is at. 
     return new Point 
     (
-        car.x + (defaultPoint.x - car.x) * Math.sin(angleShift(car.angle)) - (defaultPoint.y - car.y) * Math.cos(angleShift(car.angle)),
-        car.y + (defaultPoint.x - car.x) * Math.cos(angleShift(car.angle)) + (defaultPoint.y - car.y) * Math.sin(angleShift(car.angle))
+        car.x + (defaultPoint.x - car.x) * Math.sin((Math.PI / 2) + (-car.angle)) - (defaultPoint.y - car.y) * Math.cos((Math.PI / 2) + (-car.angle)),
+        car.y + (defaultPoint.x - car.x) * Math.cos((Math.PI / 2) + (-car.angle)) + (defaultPoint.y - car.y) * Math.sin((Math.PI / 2) + (-car.angle))
     )   
-}
-
-// Our angle convention is where Zero Degrees is at "North" on a circle, and clockwise is positive. 
-// This method switches that to the "correct" trig convention (look up the unit circle) so that we can use it with JS's trig functions 
-function angleShift(initialValue)
-{
-    // Might have to add a "% 360" here if turning more than 360 degrees here leads to faulty collisions 
-    return (Math.PI / 2) + (-initialValue);
 }
 
 // Does exactly what it says - Functions should be as self-documenting as possible w/o needing comments 
