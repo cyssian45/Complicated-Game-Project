@@ -44,14 +44,14 @@ var myGameArea =
         this.interval = setInterval(updateGameArea, 20);
 
         //Event Listeners
-        window.addEventListener('keydown', function (e) {
-            e.preventDefault();
+        window.addEventListener('keydown', function (button) {
+            button.preventDefault();
             myGameArea.keys = (myGameArea.keys || []);
-            myGameArea.keys[e.keyCode] = (e.type == "keydown");
+            myGameArea.keys[button.keyCode] = (button.type == "keydown");
         });
 
-        window.addEventListener('keyup', function (e) {
-            myGameArea.keys[e.keyCode] = (e.type == "keydown");
+        window.addEventListener('keyup', function (button) {
+            myGameArea.keys[button.keyCode] = (button.type == "keydown");
         });
     },
 
