@@ -158,7 +158,7 @@ function updateGameArea()
         return;
     }
 
-    // Triggers collision checks for all of the 
+    // Triggers collision checks for all of the powerups
     car.powerupCheck();
 
     // Clears the board
@@ -187,7 +187,6 @@ function updateGameArea()
         myGameArea.context.fillRect(powerUpRectangles[0][0], powerUpRectangles[0][1], powerUpRectangles[0][2], powerUpRectangles[0][3]);
     }
 
-    //car.speed = 0; ***Leave this commented***
     //Depending on which key is pressed, the appropriate value is adjusted
     if (myGameArea.keys && myGameArea.keys[65]) 
     {
@@ -217,7 +216,7 @@ function updateGameArea()
         car.friction += -.00005;
     }
     
-    // Updating car positioning to 
+    // Updating car positioning
     car.newPos();
     car.update();
 }
@@ -239,7 +238,7 @@ function Point(x, y)
   this.y = y;
 }
 
-// Used t
+// Used to determine if the finish line has been crossed or if a powerup has been collected
 function isCarTouchingRectangle(car, rectangle)
 {
     let defaultCarCoordinates = 
@@ -279,7 +278,7 @@ function isCarTouchingRectangle(car, rectangle)
 
 // Used to check if car is on the path
 // This checks if any point is off a rectangle, not that any point is inside a rectangle like isCarTouchingRectangle
-// Because our course is our rectangles and not the walls, this needs to be much more complex :P 
+// Bbecause our course is only rectangles and not defined by the walls, this needs to be much more complex :P 
 function isCarOffPath(car)
 {
     // Determines what positions the corners would be in without any rotation
