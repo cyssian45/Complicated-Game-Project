@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+    </head>
+
+    <body onload="startGame()">
+    
+<script>
+
+//Collisions will be much the same, but don't need all the fancy rotation business anymore.
+//Collisions with walls and with obstacles. With walls, no game over just not going through. Obastacles, game over!
+//Speed to zero when hitting wall.
+
+//Car constructor. Includes all aspects of the car (see parameters)
+function playerConstructor(width, height, color, x, y, type)
+{
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.speed = 0;
+    this.x = x;
+    this.y = y;    
+    
+    // Checks if the car would go outside of the 800x600 canvas 
+    this.crashCheck = function()
+    {
+        return isCarOffPath(this);
+    }
+}
+    // Triggers collision checks for all of the powerups
+    car.powerupCheck();
+
+/****************************************************************
+ * 
+ *                     COLLISION
+ * 
+ *  (You don't need to know how this works. It's pretty complicated,
+ *  especially for beginners. We'll explain the general idea behind it, 
+ *  though, as part of the presentation.)
+ * 
+ * **************************************************************/
+
+// Makes a point class so new points can be declared with x and y properties 
+function Point(x, y) 
+{
+  this.x = x;
+  this.y = y;
+}
+
+// Used to determine if the finish line has been crossed or if a powerup has been collected
+function isCarTouchingRectangle(car, rectangle)
+{
+    let defaultCarCoordinates = 
+    {
+        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
+        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
+        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
+        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
+    }
+
+    // Determines what positions the corners are at given the car's current rotation
+    let actualCarCoordinates = 
+    {
+        topLeft: convertBasePositionToActualPosition(defaultCarCoordinates.topLeft, car),
+        topRight: convertBasePositionToActualPosition(defaultCarCoordinates.topRight, car),
+        bottomLeft: convertBasePositionToActualPosition(defaultCarCoordinates.bottomLeft, car),
+        bottomRight: convertBasePositionToActualPosition(defaultCarCoordinates.bottomRight, car)
+    }
+
+    let rectangleMinX = rectangle[0];
+    let rectangleMaxX = rectangle[0] + rectangle[2];
+    let rectangleMinY = rectangle[1];
+    let rectangleMaxY = rectangle[1] + rectangle[3];
+
+    let isCarTouchingRectangle = false;
+
+    if (actualCarCoordinates.topLeft.x >= rectangleMinX && actualCarCoordinates.topLeft.x <= rectangleMaxX && actualCarCoordinates.topLeft.y >= rectangleMinY && actualCarCoordinates.topLeft.y <= rectangleMaxY ||
+        actualCarCoordinates.topRight.x >= rectangleMinX && actualCarCoordinates.topRight.x <= rectangleMaxX && actualCarCoordinates.topRight.y >= rectangleMinY && actualCarCoordinates.topRight.y <= rectangleMaxY ||
+        actualCarCoordinates.bottomLeft.x >= rectangleMinX && actualCarCoordinates.bottomLeft.x <= rectangleMaxX && actualCarCoordinates.bottomLeft.y >= rectangleMinY && actualCarCoordinates.bottomLeft.y <= rectangleMaxY ||
+        actualCarCoordinates.bottomRight.x >= rectangleMinX && actualCarCoordinates.bottomRight.x <= rectangleMaxX && actualCarCoordinates.bottomRight.y >= rectangleMinY && actualCarCoordinates.bottomRight.y <= rectangleMaxY)
+    {
+        isCarTouchingRectangle = true;
+    }
+
+    return isCarTouchingRectangle;        
+}
+
+// Used to check if car is on the path
+// This checks if any point is off a rectangle, not that any point is inside a rectangle like isCarTouchingRectangle
+// Bbecause our course is only rectangles and not defined by the walls, this needs to be much more complex :P 
+function isCarOffPath(car)
+{
+    // Determines what positions the corners would be in without any rotation
+    // Each corner is defined as a "Point" - Has x and y properties / data fields 
+    let defaultCarCoordinates = 
+    {
+        topLeft: new Point(car.x - (car.width / 2), car.y - (car.height / 2)), // Top-Left Point
+        topRight: new Point(car.x + (car.width / 2), car.y - (car.height / 2)), // Top-Right Point
+        bottomLeft: new Point(car.x - (car.width / 2), car.y + (car.height / 2)), // Bottom-Left Point
+        bottomRight: new Point(car.x + (car.width / 2), car.y + (car.height / 2))  // Bottom-Right Point
+    }
+
+    let areAllPointsInsideARectangle = true;
+
+    // If any of the points are "not in a rectangle" then the car is "off path" and this entire method returns false 
+    if (!isPointInsideARectangle(actualCarCoordinates.topLeft)) { areAllPointsInsideARectangle = false; }    
+    else if (!isPointInsideARectangle(actualCarCoordinates.topRight)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomLeft)) { areAllPointsInsideARectangle = false; }
+    else if (!isPointInsideARectangle(actualCarCoordinates.bottomRight)) { areAllPointsInsideARectangle = false; }
+
+    // If you're wondering why this is negated, the boolean value here is the opposite of what we're trying to return as part of the method
+    // If they're "all inside a rectangle", it's on the path. Therefore, this function should return that it's "not off the path", or, on the path.  
+    return !areAllPointsInsideARectangle;
+}
+
+// Does exactly what it says - Functions should be as self-documenting as possible w/o needing comments 
+function isPointInsideARectangle(point)
+{
+    let isPointInsideARectangle = false;
+
+    // Iterates through each rectangle on the course 
+    for (let i = 0; i < rects.length; i++)
+    {
+        // Determining the bounds for the rectangle 
+        let rectangleMinX = rects[i][0];
+        let rectangleMaxX = rects[i][0] + rects[i][2];
+        let rectangleMinY = rects[i][1];
+        let rectangleMaxY = rects[i][1] + rects[i][3];
+
+        if (point.x >= rectangleMinX && point.x <= rectangleMaxX && point.y >= rectangleMinY && point.y <= rectangleMaxY)
+        {
+            isPointInsideARectangle = true;
+            break;
+        }
+    }
+
+    return isPointInsideARectangle;
+}
+
+</script>
+
+    </body>
+</html>
